@@ -1,0 +1,2770 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>InkStack – Private-first Blogging</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-body: #020617;
+      --bg-elevated: #020617;
+      --bg-surface: #020617;
+      --bg-soft: rgba(15,23,42,0.9);
+      --bg-soft-alt: rgba(30,64,175,0.25);
+
+      --border-subtle: rgba(148,163,184,0.3);
+      --border-strong: rgba(148,163,184,0.6);
+
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-soft: #6b7280;
+      --text-inverse: #020617;
+
+      --accent: #6366f1;
+      --accent-soft: rgba(99,102,241,0.16);
+      --accent-soft-strong: rgba(99,102,241,0.3);
+      --accent-strong: #4f46e5;
+
+      --danger: #f97373;
+      --danger-soft: rgba(248,113,113,0.1);
+      --success: #4ade80;
+      --success-soft: rgba(74,222,128,0.12);
+      --warning: #fbbf24;
+
+      --shadow-soft: 0 22px 60px rgba(15,23,42,0.85);
+      --shadow-subtle: 0 10px 30px rgba(15,23,42,0.7);
+
+      --radius-lg: 1.1rem;
+      --radius-md: 0.8rem;
+      --radius-sm: 0.55rem;
+      --radius-pill: 999px;
+
+      --top-nav-height: 64px;
+      --transition-fast: 160ms ease-out;
+      --transition-med: 220ms ease-out;
+    }
+
+    html[data-theme="light"] {
+      color-scheme: light;
+      --bg-body: #f3f4f6;
+      --bg-elevated: #f9fafb;
+      --bg-surface: #ffffff;
+      --bg-soft: #e5e7eb;
+      --bg-soft-alt: rgba(129,140,248,0.13);
+
+      --border-subtle: rgba(148,163,184,0.4);
+      --border-strong: rgba(107,114,128,0.8);
+
+      --text-main: #0f172a;
+      --text-muted: #6b7280;
+      --text-soft: #9ca3af;
+      --text-inverse: #ffffff;
+
+      --accent: #4f46e5;
+      --accent-soft: rgba(79,70,229,0.08);
+      --accent-soft-strong: rgba(79,70,229,0.16);
+      --accent-strong: #4338ca;
+
+      --danger: #dc2626;
+      --danger-soft: rgba(220,38,38,0.05);
+      --success: #16a34a;
+      --success-soft: rgba(22,163,74,0.08);
+      --warning: #d97706;
+
+      --shadow-soft: 0 20px 60px rgba(15,23,42,0.18);
+      --shadow-subtle: 0 10px 28px rgba(15,23,42,0.14);
+    }
+
+    * , *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,0.28), transparent 55%),
+        radial-gradient(circle at top right, rgba(129,140,248,0.32), transparent 55%),
+        radial-gradient(circle at bottom, rgba(45,212,191,0.25), transparent 55%),
+        var(--bg-body);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+    h1,h2,h3,h4,h5,h6 {
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
+    }
+    p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    button {
+      font-family: inherit;
+      font-size: 0.95rem;
+      border: none;
+      background: none;
+      padding: 0;
+      cursor: pointer;
+    }
+    input, select, textarea {
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+    input, select, textarea, button {
+      outline-offset: 2px;
+    }
+    img {
+      max-width: 100%;
+      display: block;
+    }
+    .hidden {
+      display: none !important;
+    }
+
+    /* Layout */
+    .app-root {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(22px);
+      background: linear-gradient(to bottom, rgba(15,23,42,0.9), rgba(15,23,42,0.78));
+      border-bottom: 1px solid rgba(148,163,184,0.35);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.75);
+    }
+    html[data-theme="light"] .top-nav {
+      background: linear-gradient(to bottom, rgba(249,250,251,0.9), rgba(249,250,251,0.86));
+      box-shadow: 0 10px 30px rgba(15,23,42,0.12);
+      border-bottom-color: rgba(148,163,184,0.35);
+    }
+
+    .top-nav-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      height: var(--top-nav-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.2rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      padding: 2px;
+      background:
+        radial-gradient(circle at 0 0, #22c55e, transparent 55%),
+        radial-gradient(circle at 100% 0, #38bdf8, transparent 60%),
+        radial-gradient(circle at 50% 100%, #6366f1, transparent 60%),
+        rgba(15,23,42,0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.45),
+        0 12px 30px rgba(15,23,42,0.95);
+    }
+    .brand-glyph {
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      background:
+        conic-gradient(from 200deg, #a855f7, #22c55e, #38bdf8, #6366f1, #a855f7);
+      box-shadow: 0 7px 16px rgba(15,23,42,0.9);
+    }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.08rem;
+    }
+    .brand-name {
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
+    .brand-tagline {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .top-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem 0.7rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148,163,184,0.35);
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.32), transparent 55%), rgba(15,23,42,0.7);
+      color: var(--text-main);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+      box-shadow: 0 10px 28px rgba(15,23,42,0.85);
+    }
+    html[data-theme="light"] .icon-button {
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.2), transparent 55%), rgba(249,250,251,0.95);
+      box-shadow: 0 10px 26px rgba(148,163,184,0.38);
+    }
+    .icon-button:hover {
+      border-color: rgba(148,163,184,0.65);
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(15,23,42,0.95);
+    }
+
+    .link-button {
+      padding: 0;
+      font-size: 0.86rem;
+      color: var(--accent);
+      background: transparent;
+      text-decoration: none;
+    }
+    .link-button:hover {
+      text-decoration: underline;
+    }
+
+    .user-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.28rem 0.7rem 0.28rem 0.8rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148,163,184,0.4);
+      background: linear-gradient(135deg, rgba(15,23,42,0.92), rgba(15,23,42,0.7));
+      box-shadow: 0 10px 24px rgba(15,23,42,0.9);
+    }
+    html[data-theme="light"] .user-meta {
+      background: linear-gradient(135deg, rgba(249,250,251,0.98), rgba(229,231,235,0.94));
+      box-shadow: 0 8px 20px rgba(148,163,184,0.35);
+    }
+    .user-email {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mobile-only {
+      display: none;
+    }
+    .desktop-hidden {
+      display: none;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem 0 2rem;
+    }
+
+    /* Auth view */
+    .auth-view {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.2rem 3.5rem;
+    }
+    .auth-inner {
+      width: 100%;
+      max-width: 1020px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+      gap: 2.2rem;
+      align-items: stretch;
+    }
+    .auth-panel {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148,163,184,0.35);
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,0.24), transparent 50%),
+        radial-gradient(circle at bottom right, rgba(129,140,248,0.24), transparent 55%),
+        linear-gradient(145deg, rgba(15,23,42,0.96), rgba(2,6,23,0.98));
+      box-shadow: var(--shadow-soft);
+      padding: 2rem 1.9rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    html[data-theme="light"] .auth-panel {
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,0.1), transparent 50%),
+        radial-gradient(circle at bottom right, rgba(129,140,248,0.12), transparent 60%),
+        #ffffff;
+    }
+
+    .auth-panel::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      border: 1px solid rgba(148,163,184,0.2);
+      pointer-events: none;
+    }
+
+    .auth-card {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148,163,184,0.45);
+      background: linear-gradient(135deg, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
+      box-shadow: var(--shadow-soft);
+      padding: 2rem 1.9rem 1.9rem;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    html[data-theme="light"] .auth-card {
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+      box-shadow: 0 20px 50px rgba(148,163,184,0.38);
+    }
+
+    .auth-header-title {
+      font-size: 1.6rem;
+      margin-bottom: 0.3rem;
+    }
+    .auth-header-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 1.4rem;
+    }
+
+    .auth-tabs {
+      display: inline-flex;
+      padding: 0.12rem;
+      border-radius: var(--radius-pill);
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.3), transparent 55%), rgba(15,23,42,0.8);
+      border: 1px solid rgba(148,163,184,0.45);
+      box-shadow: 0 14px 30px rgba(15,23,42,0.85);
+      margin-bottom: 1.6rem;
+    }
+    html[data-theme="light"] .auth-tabs {
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.18), transparent 55%), rgba(249,250,251,0.98);
+      box-shadow: 0 14px 34px rgba(148,163,184,0.4);
+    }
+    .auth-tab {
+      padding: 0.4rem 0.95rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      border-radius: 999px;
+      transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+      position: relative;
+    }
+    .auth-tab.is-active {
+      color: var(--text-inverse);
+      background: linear-gradient(135deg, #4f46e5, #22c55e);
+      box-shadow: 0 10px 24px rgba(15,23,42,0.95);
+      transform: translateY(-0.5px);
+    }
+
+    .auth-form {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .auth-form.is-active {
+      display: flex;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-bottom: 0.2rem;
+    }
+    .field.inline {
+      margin-bottom: 0;
+    }
+    .field-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-soft);
+    }
+    .text-input, .select-input {
+      width: 100%;
+      border-radius: 0.7rem;
+      border: 1px solid var(--border-subtle);
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.25), transparent 55%), rgba(15,23,42,0.9);
+      color: var(--text-main);
+      padding: 0.55rem 0.7rem;
+      transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+      box-shadow: 0 12px 28px rgba(15,23,42,0.85);
+    }
+    html[data-theme="light"] .text-input,
+    html[data-theme="light"] .select-input {
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.18), transparent 55%), #ffffff;
+      box-shadow: 0 10px 26px rgba(148,163,184,0.34);
+    }
+    .text-input::placeholder {
+      color: var(--text-soft);
+    }
+    .text-input:focus, .select-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 16px 36px rgba(59,130,246,0.7);
+      transform: translateY(-0.5px);
+    }
+
+    .auth-note {
+      margin-top: 1.1rem;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+    }
+
+    .btn {
+      border-radius: 999px;
+      padding: 0.55rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.28rem;
+      border: 1px solid transparent;
+      transition: background var(--transition-med), border-color var(--transition-med), box-shadow var(--transition-med), transform var(--transition-med), color var(--transition-med);
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #4f46e5, #22c55e);
+      color: #f9fafb;
+      box-shadow: 0 16px 40px rgba(15,23,42,0.95);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 20px 50px rgba(15,23,42,1);
+      transform: translateY(-1px);
+    }
+    .btn-soft {
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      border-color: var(--accent-soft-strong);
+    }
+    .btn-soft:hover {
+      background: var(--accent-soft-strong);
+      box-shadow: 0 12px 32px rgba(79,70,229,0.6);
+    }
+    .btn-outline {
+      border-color: var(--border-strong);
+      background: transparent;
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      border-color: var(--accent);
+      background: rgba(15,23,42,0.9);
+      box-shadow: 0 12px 30px rgba(15,23,42,0.9);
+    }
+    .btn-ghost {
+      border-radius: 999px;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.78rem;
+      border: 1px solid rgba(148,163,184,0.35);
+      background: transparent;
+      color: var(--text-muted);
+    }
+    .btn-ghost:hover {
+      background: rgba(148,163,184,0.10);
+      color: var(--text-main);
+    }
+    .btn-sm {
+      padding: 0.28rem 0.6rem;
+      font-size: 0.78rem;
+    }
+    .btn-danger {
+      color: var(--danger);
+      border-color: var(--danger-soft);
+    }
+    .btn-danger:hover {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+    }
+    .btn-block {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* App shell */
+    .app-shell {
+      max-width: 1120px;
+      margin: 0 auto;
+      margin-top: 1.4rem;
+      border-radius: 1.3rem;
+      border: 1px solid rgba(148,163,184,0.45);
+      background:
+        radial-gradient(circle at top left, rgba(59,130,246,0.26), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(14,165,233,0.2), transparent 60%),
+        linear-gradient(135deg, rgba(15,23,42,0.98), rgba(15,23,42,0.93));
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      position: relative;
+      overflow: hidden;
+    }
+    html[data-theme="light"] .app-shell {
+      background:
+        radial-gradient(circle at top left, rgba(59,130,246,0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(56,189,248,0.14), transparent 60%),
+        #ffffff;
+      box-shadow: 0 24px 70px rgba(148,163,184,0.4);
+    }
+
+    .sidebar {
+      border-right: 1px solid rgba(148,163,184,0.45);
+      background: radial-gradient(circle at top left, rgba(94,234,212,0.1), transparent 55%), rgba(15,23,42,0.95);
+    }
+    html[data-theme="light"] .sidebar {
+      background: radial-gradient(circle at top left, rgba(129,140,248,0.08), transparent 55%), #f9fafb;
+    }
+    .sidebar-inner {
+      height: 100%;
+      padding: 1.1rem 0.95rem 1.3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.7rem;
+    }
+    .sidebar-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.35), transparent 58%), rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.55);
+      box-shadow: 0 12px 24px rgba(15,23,42,0.95);
+    }
+    html[data-theme="light"] .sidebar-brand {
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.25), transparent 58%), rgba(249,250,251,0.98);
+      box-shadow: 0 12px 26px rgba(148,163,184,0.45);
+    }
+    .sidebar-brand-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #4f46e5, #22c55e);
+      box-shadow: 0 0 0 1px rgba(15,23,42,0.9), 0 0 18px rgba(59,130,246,0.8);
+    }
+    .sidebar-brand-text {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-soft);
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      margin-top: 0.2rem;
+    }
+    .nav-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.4rem;
+      border-radius: 0.8rem;
+      padding: 0.44rem 0.7rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      background: transparent;
+      transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+    }
+    .nav-item span {
+      pointer-events: none;
+    }
+    .nav-item:hover {
+      background: rgba(15,23,42,0.85);
+      border-color: rgba(148,163,184,0.55);
+      color: var(--text-main);
+      transform: translateY(-0.5px);
+    }
+    html[data-theme="light"] .nav-item:hover {
+      background: rgba(226,232,240,0.85);
+    }
+    .nav-item.is-active {
+      background: linear-gradient(135deg, #4f46e5, #22c55e);
+      color: #f9fafb;
+      border-color: transparent;
+      box-shadow: 0 16px 40px rgba(15,23,42,0.9);
+    }
+    .sidebar-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(148,163,184,0.55), transparent);
+      margin: 0.6rem 0 0.3rem;
+    }
+
+    .sidebar-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15,23,42,0.75);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity var(--transition-med), visibility var(--transition-med);
+      z-index: 20;
+    }
+    .content-wrapper {
+      position: relative;
+      padding: 1.3rem 1.35rem 1.5rem;
+      background:
+        radial-gradient(circle at top right, rgba(96,165,250,0.2), transparent 65%),
+        radial-gradient(circle at bottom left, rgba(45,212,191,0.24), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.94));
+      overflow: hidden;
+    }
+    html[data-theme="light"] .content-wrapper {
+      background:
+        radial-gradient(circle at top right, rgba(129,140,248,0.16), transparent 65%),
+        radial-gradient(circle at bottom left, rgba(45,212,191,0.16), transparent 60%),
+        #f9fafb;
+    }
+    .content-inner {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .view {
+      display: none;
+      animation: fadeIn 200ms ease-out;
+    }
+    .view.view-active {
+      display: block;
+    }
+    .view-header {
+      margin-bottom: 1.3rem;
+    }
+    .view-header h1 {
+      font-size: 1.45rem;
+      letter-spacing: -0.05em;
+      margin-bottom: 0.25rem;
+    }
+    .view-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 1.3rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1.1rem;
+    }
+
+    .card {
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(148,163,184,0.45);
+      background: linear-gradient(145deg, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
+      box-shadow: var(--shadow-subtle);
+      padding: 1rem;
+    }
+    html[data-theme="light"] .card {
+      background: linear-gradient(145deg, #ffffff, #f9fafb);
+      box-shadow: 0 16px 40px rgba(148,163,184,0.32);
+    }
+    .card-title {
+      font-size: 0.95rem;
+      margin-bottom: 0.3rem;
+    }
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      margin-bottom: 0.7rem;
+    }
+
+    .stat-card {
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(148,163,184,0.45);
+      background:
+        radial-gradient(circle at top left, rgba(129,140,248,0.32), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.92));
+      padding: 0.8rem 0.85rem;
+      box-shadow: 0 14px 34px rgba(15,23,42,0.95);
+    }
+    html[data-theme="light"] .stat-card {
+      background:
+        radial-gradient(circle at top left, rgba(129,140,248,0.16), transparent 60%),
+        #ffffff;
+      box-shadow: 0 16px 40px rgba(148,163,184,0.36);
+    }
+    .stat-label {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-soft);
+      margin-bottom: 0.25rem;
+    }
+    .stat-value {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 0.12rem;
+    }
+    .stat-meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 0.16rem 0.5rem;
+      font-size: 0.72rem;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .badge-muted {
+      border-color: rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.8);
+      color: var(--text-soft);
+    }
+    html[data-theme="light"] .badge-muted {
+      background: rgba(226,232,240,0.9);
+    }
+    .badge-success {
+      border-color: rgba(22,163,74,0.8);
+      background: var(--success-soft);
+      color: var(--success);
+    }
+    .badge-danger {
+      border-color: rgba(239,68,68,0.8);
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+    .badge-outline {
+      border-color: rgba(148,163,184,0.6);
+      background: transparent;
+      color: var(--text-muted);
+    }
+    .badge-small {
+      padding: 0.14rem 0.46rem;
+      font-size: 0.68rem;
+    }
+
+    .toolbar-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.7rem;
+      margin-bottom: 0.9rem;
+    }
+    .toolbar-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    /* Editor */
+    .editor-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 0.95rem;
+    }
+    .editor-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .editor-title-input {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      border-radius: 0.9rem;
+      border: 1px solid rgba(148,163,184,0.45);
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.35), transparent 55%), rgba(15,23,42,0.95);
+      color: var(--text-main);
+      padding: 0.7rem 0.9rem;
+      box-shadow: 0 14px 32px rgba(15,23,42,0.9);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), background var(--transition-fast);
+    }
+    html[data-theme="light"] .editor-title-input {
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.2), transparent 55%), #ffffff;
+      box-shadow: 0 14px 36px rgba(148,163,184,0.34);
+    }
+    .editor-title-input::placeholder {
+      color: var(--text-soft);
+    }
+    .editor-title-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 18px 42px rgba(59,130,246,0.85);
+      transform: translateY(-1px);
+    }
+    .editor-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    .toggle input {
+      display: none;
+    }
+    .toggle-track {
+      width: 38px;
+      height: 20px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.55);
+      display: flex;
+      align-items: center;
+      padding: 0 2px;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.9);
+    }
+    html[data-theme="light"] .toggle-track {
+      background: rgba(229,231,235,0.9);
+    }
+    .toggle-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: linear-gradient(145deg, #4f46e5, #22c55e);
+      box-shadow: 0 4px 12px rgba(15,23,42,0.9);
+      transform: translateX(0);
+      transition: transform var(--transition-fast);
+    }
+    .toggle input:checked + .toggle-track {
+      background: rgba(59,130,246,0.22);
+      border-color: rgba(59,130,246,0.9);
+    }
+    .toggle input:checked + .toggle-track .toggle-thumb {
+      transform: translateX(16px);
+    }
+    .toggle-label {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    .tags-input {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.3rem;
+      border-radius: 0.8rem;
+      border: 1px dashed rgba(148,163,184,0.55);
+      padding: 0.3rem 0.4rem;
+      background: rgba(15,23,42,0.92);
+    }
+    html[data-theme="light"] .tags-input {
+      background: rgba(249,250,251,0.96);
+    }
+    .tags-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.26rem;
+      padding: 0.18rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.6);
+      color: var(--text-muted);
+    }
+    html[data-theme="light"] .tag-pill {
+      background: rgba(226,232,240,0.95);
+    }
+    .tag-remove {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+    .tag-input {
+      border: none;
+      background: transparent;
+      min-width: 90px;
+      color: var(--text-main);
+      padding: 0.2rem 0.3rem;
+    }
+    .tag-input::placeholder {
+      color: var(--text-soft);
+    }
+    .tag-input:focus {
+      outline: none;
+    }
+
+    .editor-area {
+      border-radius: 1rem;
+      border: 1px solid rgba(148,163,184,0.45);
+      background:
+        radial-gradient(circle at 0 0, rgba(148,163,184,0.3), transparent 55%),
+        radial-gradient(circle at 100% 0, rgba(129,140,248,0.26), transparent 60%),
+        rgba(15,23,42,0.98);
+      box-shadow: 0 22px 60px rgba(15,23,42,0.95);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    html[data-theme="light"] .editor-area {
+      background:
+        radial-gradient(circle at 0 0, rgba(148,163,184,0.18), transparent 55%),
+        radial-gradient(circle at 100% 0, rgba(129,140,248,0.14), transparent 60%),
+        #ffffff;
+      box-shadow: 0 20px 55px rgba(148,163,184,0.4);
+    }
+
+    .editor-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.6rem;
+      border-bottom: 1px solid rgba(148,163,184,0.45);
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.4), transparent 60%), rgba(15,23,42,0.9);
+    }
+    html[data-theme="light"] .editor-toolbar {
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.22), transparent 60%), rgba(249,250,251,0.96);
+    }
+    .toolbar-button {
+      border-radius: 0.7rem;
+      padding: 0.25rem 0.55rem;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      border: 1px solid transparent;
+      background: transparent;
+      transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+    }
+    .toolbar-button:hover {
+      background: rgba(15,23,42,0.9);
+      border-color: rgba(148,163,184,0.5);
+      color: var(--text-main);
+      transform: translateY(-0.5px);
+    }
+    html[data-theme="light"] .toolbar-button:hover {
+      background: rgba(226,232,240,0.95);
+    }
+
+    .editor-surface {
+      min-height: 240px;
+      padding: 0.8rem 0.9rem 0.9rem;
+      font-size: 0.98rem;
+      line-height: 1.65;
+      color: var(--text-main);
+      overflow-y: auto;
+    }
+    .editor-surface:focus {
+      outline: none;
+    }
+    .editor-surface:empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-soft);
+    }
+    .editor-surface h1,
+    .editor-surface h2,
+    .editor-surface h3 {
+      margin: 0.5rem 0 0.2rem;
+      font-weight: 600;
+    }
+    .editor-surface h1 {
+      font-size: 1.35rem;
+    }
+    .editor-surface h2 {
+      font-size: 1.15rem;
+    }
+    .editor-surface ul {
+      padding-left: 1.2rem;
+      margin: 0.35rem 0;
+    }
+    .editor-surface a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .editor-footer {
+      border-top: 1px solid rgba(148,163,184,0.45);
+      padding: 0.6rem 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      background: linear-gradient(to bottom, rgba(15,23,42,0.95), rgba(15,23,42,0.98));
+    }
+    html[data-theme="light"] .editor-footer {
+      background: linear-gradient(to bottom, rgba(249,250,251,0.98), #ffffff);
+    }
+    .editor-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+    .editor-status {
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      text-align: right;
+      flex: 1;
+    }
+
+    /* Posts list */
+    .posts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .post-card {
+      border-radius: 0.9rem;
+      border: 1px solid rgba(148,163,184,0.45);
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.35), transparent 58%), rgba(15,23,42,0.97);
+      padding: 0.75rem 0.8rem;
+      box-shadow: 0 16px 40px rgba(15,23,42,0.95);
+    }
+    html[data-theme="light"] .post-card {
+      background: radial-gradient(circle at 0 0, rgba(148,163,184,0.2), transparent 58%), #ffffff;
+      box-shadow: 0 16px 40px rgba(148,163,184,0.34);
+    }
+    .post-card-main {
+      margin-bottom: 0.4rem;
+    }
+    .post-title {
+      font-size: 1rem;
+      margin-bottom: 0.12rem;
+    }
+    .post-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.25rem;
+    }
+    .post-excerpt {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+    .post-tags-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-bottom: 0.3rem;
+    }
+    .post-tag-chip {
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 0.14rem 0.42rem;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.5);
+      color: var(--text-soft);
+    }
+    html[data-theme="light"] .post-tag-chip {
+      background: rgba(226,232,240,0.95);
+    }
+    .post-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+    }
+    .post-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .empty-state {
+      border-radius: var(--radius-md);
+      border: 1px dashed rgba(148,163,184,0.6);
+      padding: 0.9rem 0.85rem;
+      font-size: 0.86rem;
+      color: var(--text-soft);
+      background: rgba(15,23,42,0.85);
+    }
+    html[data-theme="light"] .empty-state {
+      background: rgba(249,250,251,0.96);
+    }
+
+    /* Settings */
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+    }
+    .radio-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.22rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.96);
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      cursor: pointer;
+    }
+    html[data-theme="light"] .radio-pill {
+      background: rgba(249,250,251,0.98);
+    }
+    .radio-pill input {
+      accent-color: var(--accent);
+    }
+
+    /* Docs */
+    .docs-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+    }
+    .code-snippet {
+      width: 100%;
+      min-height: 170px;
+      border-radius: 0.7rem;
+      border: 1px solid rgba(148,163,184,0.55);
+      background:
+        radial-gradient(circle at 0 0, rgba(148,163,184,0.35), transparent 60%),
+        rgba(15,23,42,0.96);
+      color: #e5e7eb;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      padding: 0.6rem 0.75rem;
+      resize: vertical;
+      box-shadow: 0 16px 40px rgba(15,23,42,0.95);
+    }
+    html[data-theme="light"] .code-snippet {
+      background:
+        radial-gradient(circle at 0 0, rgba(148,163,184,0.2), transparent 60%),
+        #020617;
+      color: #e5e7eb;
+      box-shadow: 0 18px 48px rgba(148,163,184,0.42);
+    }
+
+    /* Micro */
+    .text-sm {
+      font-size: 0.82rem;
+    }
+    .text-xs {
+      font-size: 0.72rem;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .auth-inner {
+        grid-template-columns: minmax(0, 1.2fr);
+        max-width: 560px;
+      }
+      .auth-panel {
+        display: none;
+      }
+    }
+
+    @media (max-width: 880px) {
+      .app-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .sidebar {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 240px;
+        transform: translateX(-102%);
+        transition: transform var(--transition-med);
+        z-index: 30;
+      }
+      body.sidebar-open .sidebar {
+        transform: translateX(0);
+      }
+      body.sidebar-open .sidebar-overlay {
+        opacity: 1;
+        visibility: visible;
+      }
+      .sidebar-overlay {
+        display: block;
+      }
+      .mobile-only {
+        display: inline-flex;
+      }
+      .desktop-hidden {
+        display: inline-flex;
+      }
+      .user-meta {
+        display: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .main {
+        padding-top: 0.8rem;
+      }
+      .top-nav-inner {
+        padding: 0 0.9rem;
+      }
+      .app-shell {
+        margin-top: 1rem;
+        border-radius: 1.05rem;
+      }
+      .content-wrapper {
+        padding: 1rem 0.9rem 1.05rem;
+      }
+      .content-inner {
+        max-width: 100%;
+      }
+      .grid-3 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .grid-2 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .editor-footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .editor-status {
+        text-align: left;
+      }
+      .toolbar-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .toolbar-group {
+        width: 100%;
+      }
+      .post-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-root">
+    <header class="top-nav">
+      <div class="top-nav-inner">
+        <div class="brand">
+          <div class="brand-mark">
+            <div class="brand-glyph"></div>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">InkStack</span>
+            <span class="brand-tagline">Private-first blogging workspace</span>
+          </div>
+        </div>
+        <div class="top-nav-actions">
+          <button class="icon-button mobile-only" id="btn-toggle-sidebar" type="button" aria-label="Toggle navigation">
+            Menu
+          </button>
+          <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle theme">
+            <span id="theme-toggle-label">Dark</span>
+          </button>
+          <div class="user-meta hidden" id="user-meta">
+            <span class="user-email" id="user-email-display"></span>
+            <button class="link-button" id="btn-logout" type="button">Logout</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="auth-view" id="auth-view">
+        <div class="auth-inner">
+          <div class="auth-panel">
+            <div style="max-width: 340px">
+              <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--text-soft); margin-bottom: 0.65rem;">
+                Private by default
+              </div>
+              <h1 style="font-size: 2rem; letter-spacing: -0.05em; margin-bottom: 0.5rem;">
+                A focused space for writing that stays yours.
+              </h1>
+              <p style="font-size: 0.9rem; margin-bottom: 1.4rem;">
+                Draft in peace with a minimal interface. Publish only when you are ready—your posts are private by default and protected per user.
+              </p>
+              <ul style="list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                <li>• Rich text editor with headings, lists, and links.</li>
+                <li>• Drafts and private posts only visible to you.</li>
+                <li>• Search, tags, and categories across your own work.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="auth-card">
+            <div class="auth-header">
+              <h2 class="auth-header-title">Sign in to your writing desk</h2>
+              <p class="auth-header-subtitle">
+                One account per writer. Email and password only.
+              </p>
+            </div>
+            <div class="auth-tabs">
+              <button class="auth-tab is-active" type="button" data-auth-mode="login">Login</button>
+              <button class="auth-tab" type="button" data-auth-mode="signup">Sign up</button>
+            </div>
+
+            <form id="login-form" class="auth-form is-active" autocomplete="on">
+              <div class="field">
+                <label class="field-label" for="login-email">Email</label>
+                <input class="text-input" id="login-email" type="email" placeholder="you@example.com" required>
+              </div>
+              <div class="field">
+                <label class="field-label" for="login-password">Password</label>
+                <input class="text-input" id="login-password" type="password" placeholder="••••••••" required minlength="6">
+              </div>
+              <button class="btn btn-primary btn-block" type="submit">Login</button>
+              <button class="btn btn-soft btn-block" type="button" id="btn-demo">Use demo workspace</button>
+            </form>
+
+            <form id="signup-form" class="auth-form" autocomplete="on">
+              <div class="field">
+                <label class="field-label" for="signup-name">Name</label>
+                <input class="text-input" id="signup-name" type="text" placeholder="Display name">
+              </div>
+              <div class="field">
+                <label class="field-label" for="signup-email">Email</label>
+                <input class="text-input" id="signup-email" type="email" placeholder="you@example.com" required>
+              </div>
+              <div class="field">
+                <label class="field-label" for="signup-password">Password</label>
+                <input class="text-input" id="signup-password" type="password" placeholder="At least 6 characters" required minlength="6">
+              </div>
+              <button class="btn btn-primary btn-block" type="submit">Create account</button>
+            </form>
+
+            <p class="auth-note">
+              This front-end demo keeps data in your browser only. See the Developer docs view for a Node.js + MongoDB backend with JWT authentication and access control.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div class="app-shell hidden" id="app-shell">
+        <aside class="sidebar" id="sidebar">
+          <div class="sidebar-inner">
+            <div class="sidebar-header">
+              <div class="sidebar-brand">
+                <span class="sidebar-brand-dot"></span>
+                <span class="sidebar-brand-text">Writing desk</span>
+              </div>
+              <button class="icon-button desktop-hidden" id="btn-close-sidebar" type="button">
+                Close
+              </button>
+            </div>
+            <nav class="sidebar-nav">
+              <button class="nav-item is-active" type="button" data-view="dashboard">
+                <span>Dashboard</span>
+              </button>
+              <button class="nav-item" type="button" data-view="new-post">
+                <span>New post</span>
+              </button>
+              <button class="nav-item" type="button" data-view="posts">
+                <span>My posts</span>
+              </button>
+              <button class="nav-item" type="button" data-view="settings">
+                <span>Settings</span>
+              </button>
+              <div class="sidebar-divider"></div>
+              <button class="nav-item" type="button" data-view="docs">
+                <span>Developer docs</span>
+              </button>
+            </nav>
+          </div>
+        </aside>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <div class="content-wrapper">
+          <div class="content-inner">
+            <!-- Dashboard -->
+            <section class="view view-active" id="view-dashboard">
+              <div class="view-header">
+                <h1>Dashboard</h1>
+                <p class="view-subtitle">At a glance: your drafts, private notes, and published work.</p>
+              </div>
+              <div class="grid-3">
+                <div class="stat-card">
+                  <div class="stat-label">Total posts</div>
+                  <div class="stat-value" id="stat-total-posts">0</div>
+                  <div class="stat-meta">Drafts and published combined.</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Published</div>
+                  <div class="stat-value" id="stat-published-posts">0</div>
+                  <div class="stat-meta"><span id="stat-public-count">0</span> public • <span id="stat-private-count">0</span> private.</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Drafts</div>
+                  <div class="stat-value" id="stat-draft-posts">0</div>
+                  <div class="stat-meta">Safe, private space to iterate.</div>
+                </div>
+              </div>
+              <div class="card">
+                <h2 class="card-title">Recent posts</h2>
+                <p class="card-subtitle">Last updated items in your personal space.</p>
+                <div id="dashboard-recent"></div>
+              </div>
+            </section>
+
+            <!-- New Post / Editor -->
+            <section class="view" id="view-new-post">
+              <div class="view-header">
+                <h1 id="editor-heading">New post</h1>
+                <p class="view-subtitle">Minimal, distraction-free editor. Posts are private unless you choose otherwise.</p>
+              </div>
+              <div class="editor-shell">
+                <div class="editor-meta">
+                  <input id="post-title" class="editor-title-input" type="text" placeholder="Untitled post" autocomplete="off">
+                  <div class="editor-meta-row">
+                    <div class="field inline">
+                      <span class="field-label">Visibility</span>
+                      <label class="toggle">
+                        <input type="checkbox" id="post-visibility">
+                        <span class="toggle-track">
+                          <span class="toggle-thumb"></span>
+                        </span>
+                        <span class="toggle-label" id="post-visibility-label">Private</span>
+                      </label>
+                    </div>
+                    <div class="field inline" style="flex:1; min-width: 150px;">
+                      <span class="field-label">Category</span>
+                      <input id="post-category" class="text-input" type="text" placeholder="e.g. Notes, Ideas, Journal">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <span class="field-label">Tags</span>
+                    <div class="tags-input">
+                      <div class="tags-list" id="tags-list"></div>
+                      <input id="tag-input" class="tag-input" type="text" placeholder="Add tag and press Enter">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="editor-area">
+                  <div class="editor-toolbar">
+                    <button type="button" class="toolbar-button" data-command="bold">Bold</button>
+                    <button type="button" class="toolbar-button" data-command="italic">Italic</button>
+                    <button type="button" class="toolbar-button" data-command="h2">Heading</button>
+                    <button type="button" class="toolbar-button" data-command="ul">Bullets</button>
+                    <button type="button" class="toolbar-button" data-command="link">Link</button>
+                    <button type="button" class="toolbar-button" id="btn-clear-format">Clear</button>
+                  </div>
+                  <div id="post-editor" class="editor-surface" contenteditable="true" spellcheck="true" data-placeholder="Start writing here. Use the toolbar for headings, bold text, lists, and links."></div>
+                  <div class="editor-footer">
+                    <div class="editor-buttons">
+                      <button type="button" class="btn btn-soft" id="btn-save-draft">Save draft</button>
+                      <button type="button" class="btn btn-primary" id="btn-publish">Publish</button>
+                      <button type="button" class="btn btn-ghost" id="btn-export-md">Export markdown</button>
+                    </div>
+                    <div class="editor-status" id="editor-status">Draft not saved yet.</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- My Posts -->
+            <section class="view" id="view-posts">
+              <div class="view-header">
+                <h1>My posts</h1>
+                <p class="view-subtitle">Search, filter, and manage everything you have written.</p>
+              </div>
+              <div class="toolbar-row">
+                <div class="toolbar-group" style="flex:1; min-width: 180px;">
+                  <input id="posts-search" class="text-input" type="search" placeholder="Search within your posts (title, content, tags)">
+                </div>
+                <div class="toolbar-group">
+                  <div class="field inline">
+                    <span class="field-label">Status</span>
+                    <select id="filter-status" class="select-input">
+                      <option value="">All</option>
+                      <option value="published">Published</option>
+                      <option value="draft">Drafts</option>
+                    </select>
+                  </div>
+                  <div class="field inline">
+                    <span class="field-label">Visibility</span>
+                    <select id="filter-visibility" class="select-input">
+                      <option value="">All</option>
+                      <option value="public">Public</option>
+                      <option value="private">Private</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div id="posts-list" class="posts-list"></div>
+            </section>
+
+            <!-- Settings -->
+            <section class="view" id="view-settings">
+              <div class="view-header">
+                <h1>Settings</h1>
+                <p class="view-subtitle">Personalize your writing workspace and manage your account.</p>
+              </div>
+              <div class="grid-2">
+                <div class="card">
+                  <h2 class="card-title">Appearance</h2>
+                  <p class="card-subtitle">Switch between light and dark themes. Preference is stored locally.</p>
+                  <div class="field">
+                    <span class="field-label">Theme</span>
+                    <div class="radio-group">
+                      <label class="radio-pill">
+                        <input type="radio" name="theme-choice" value="dark">
+                        <span>Dark</span>
+                      </label>
+                      <label class="radio-pill">
+                        <input type="radio" name="theme-choice" value="light">
+                        <span>Light</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="card">
+                  <h2 class="card-title">Account</h2>
+                  <p class="card-subtitle">Basic information for the current authenticated user.</p>
+                  <p class="text-sm" style="margin-bottom: 0.25rem;">Email: <strong id="settings-email">—</strong></p>
+                  <p class="text-sm" style="margin-bottom: 0.7rem;">Member since: <span id="settings-created">—</span></p>
+                  <button type="button" class="btn btn-outline" id="btn-logout-settings">Logout</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Developer Docs -->
+            <section class="view" id="view-docs">
+              <div class="view-header">
+                <h1>Developer docs</h1>
+                <p class="view-subtitle">Suggested Node.js + Express + MongoDB backend for this UI, including models, routes, and security.</p>
+              </div>
+              <div class="docs-grid">
+                <div class="card">
+                  <h2 class="card-title">Project structure</h2>
+                  <p class="card-subtitle">Recommended full-stack layout.</p>
+                  <textarea class="code-snippet" readonly>
+inkstack/
+  backend/
+    package.json
+    .env
+    src/
+      server.js
+      config/
+        db.js
+      models/
+        User.js
+        Post.js
+      middleware/
+        auth.js
+      routes/
+        auth.routes.js
+        post.routes.js
+        user.routes.js
+
+  frontend/
+    public/
+      index.html        # this file
+    src/
+      api.js           # optional Fetch wrappers
+      main.js          # SPA behavior if split out
+
+# Install backend dependencies
+cd backend
+npm init -y
+npm install express mongoose cors dotenv cookie-parser bcryptjs jsonwebtoken
+npm install --save-dev nodemon
+
+# Run backend in development
+npm run dev
+                  </textarea>
+                </div>
+
+                <div class="card">
+                  <h2 class="card-title">Environment configuration</h2>
+                  <p class="card-subtitle">Example <code>.env</code> for local development.</p>
+                  <textarea class="code-snippet" readonly>
+# .env
+PORT=4000
+MONGODB_URI=mongodb://127.0.0.1:27017/inkstack
+JWT_SECRET=change_this_to_a_long_random_string
+CLIENT_ORIGIN=http://localhost:5173
+BCRYPT_ROUNDS=12
+                  </textarea>
+                </div>
+
+                <div class="card">
+                  <h2 class="card-title">MongoDB models</h2>
+                  <p class="card-subtitle">User and Post schemas with tags, categories, and privacy.</p>
+                  <textarea class="code-snippet" readonly>
+// src/models/User.js
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true
+    },
+    passwordHash: {
+      type: String,
+      required: true
+    },
+    name: {
+      type: String,
+      trim: true
+    }
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model('User', userSchema);
+
+
+// src/models/Post.js
+const { Schema, model } = require('mongoose');
+
+const postSchema = new Schema(
+  {
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true
+    },
+    title: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    content: {
+      type: String, // HTML from rich text editor
+      required: true
+    },
+    status: {
+      type: String,
+      enum: ['draft', 'published'],
+      default: 'draft',
+      index: true
+    },
+    isPublic: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
+    tags: {
+      type: [String],
+      default: []
+    },
+    category: {
+      type: String,
+      trim: true
+    }
+  },
+  { timestamps: true }
+);
+
+// Search indexes
+postSchema.index({ author: 1, status: 1, isPublic: 1 });
+postSchema.index({ title: 'text', content: 'text', tags: 'text' });
+
+module.exports = model('Post', postSchema);
+                  </textarea>
+                </div>
+
+                <div class="card">
+                  <h2 class="card-title">JWT auth middleware</h2>
+                  <p class="card-subtitle">Protects private routes and attaches <code>req.userId</code>.</p>
+                  <textarea class="code-snippet" readonly>
+// src/middleware/auth.js
+const jwt = require('jsonwebtoken');
+
+function requireAuth(req, res, next) {
+  const header = req.headers.authorization || '';
+  const [, token] = header.split(' ');
+
+  if (!token) {
+    return res.status(401).json({ message: 'Authentication required' });
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = payload.sub;
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: 'Invalid or expired token' });
+  }
+}
+
+module.exports = requireAuth;
+                  </textarea>
+                </div>
+
+                <div class="card">
+                  <h2 class="card-title">Auth routes (signup, login, me)</h2>
+                  <p class="card-subtitle">Email/password with bcrypt hashing and JWT issuance.</p>
+                  <textarea class="code-snippet" readonly>
+// src/routes/auth.routes.js
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const requireAuth = require('../middleware/auth');
+
+const router = express.Router();
+
+function signToken(userId) {
+  return jwt.sign(
+    { sub: userId },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+}
+
+router.post('/signup', async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password required' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(409).json({ message: 'Email already in use' });
+    }
+
+    const rounds = Number(process.env.BCRYPT_ROUNDS || 12);
+    const passwordHash = await bcrypt.hash(password, rounds);
+
+    const user = await User.create({ email, passwordHash, name });
+    const token = signToken(user._id.toString());
+
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id.toString(),
+        email: user.email,
+        name: user.name,
+        createdAt: user.createdAt
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Signup failed' });
+  }
+});
+
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    const ok = await bcrypt.compare(password, user.passwordHash);
+    if (!ok) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const token = signToken(user._id.toString());
+    res.json({
+      token,
+      user: {
+        id: user._id.toString(),
+        email: user.email,
+        name: user.name,
+        createdAt: user.createdAt
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Login failed' });
+  }
+});
+
+router.get('/me', requireAuth, async (req, res) => {
+  const user = await User.findById(req.userId).lean();
+  if (!user) return res.status(404).json({ message: 'User not found' });
+  res.json({
+    id: user._id.toString(),
+    email: user.email,
+    name: user.name,
+    createdAt: user.createdAt
+  });
+});
+
+module.exports = router;
+                  </textarea>
+                </div>
+
+                <div class="card">
+                  <h2 class="card-title">Post routes &amp; access control</h2>
+                  <p class="card-subtitle">Private by default; only author sees private posts.</p>
+                  <textarea class="code-snippet" readonly>
+// src/routes/post.routes.js
+const express = require('express');
+const Post = require('../models/Post');
+const requireAuth = require('../middleware/auth');
+
+const router = express.Router();
+
+// Create post (draft or published). Defaults to private.
+router.post('/', requireAuth, async (req, res) => {
+  try {
+    const { title, content, status = 'draft', isPublic = false, tags = [], category } = req.body;
+    if (!title || !content) {
+      return res.status(400).json({ message: 'Title and content are required' });
+    }
+
+    const post = await Post.create({
+      author: req.userId,
+      title,
+      content,
+      status,
+      isPublic,
+      tags,
+      category
+    });
+
+    res.status(201).json(post);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Could not create post' });
+  }
+});
+
+// List current user's posts with search, status, and visibility filters
+router.get('/me', requireAuth, async (req, res) => {
+  try {
+    const { search, status, visibility, tag } = req.query;
+    const filter = { author: req.userId };
+
+    if (status) filter.status = status;
+    if (visibility === 'public') filter.isPublic = true;
+    if (visibility === 'private') filter.isPublic = false;
+    if (tag) filter.tags = tag;
+
+    let query = Post.find(filter).sort({ updatedAt: -1 });
+
+    if (search) {
+      const regex = new RegExp(search, 'i');
+      query = query.find({
+        $or: [{ title: regex }, { content: regex }, { tags: regex }]
+      });
+    }
+
+    const posts = await query.exec();
+    res.json(posts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Could not fetch posts' });
+  }
+});
+
+// Get single post: author can access always; others only if public & published
+router.get('/:id', requireAuth, async (req, res) => {
+  const post = await Post.findById(req.params.id).lean();
+  if (!post) return res.status(404).json({ message: 'Not found' });
+
+  const isOwner = post.author.toString() === req.userId;
+  const isPublic = post.isPublic && post.status === 'published';
+
+  if (!isOwner && !isPublic) {
+    // Do not leak existence of private posts
+    return res.status(404).json({ message: 'Not found' });
+  }
+  res.json(post);
+});
+
+// Update post (only author)
+router.put('/:id', requireAuth, async (req, res) => {
+  const post = await Post.findById(req.params.id);
+  if (!post) return res.status(404).json({ message: 'Not found' });
+  if (post.author.toString() !== req.userId) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+
+  const allowed = ['title', 'content', 'status', 'isPublic', 'tags', 'category'];
+  allowed.forEach((key) => {
+    if (req.body[key] !== undefined) {
+      post[key] = req.body[key];
+    }
+  });
+
+  await post.save();
+  res.json(post);
+});
+
+// Delete post (only author)
+router.delete('/:id', requireAuth, async (req, res) => {
+  const post = await Post.findById(req.params.id);
+  if (!post) return res.status(404).json({ message: 'Not found' });
+  if (post.author.toString() !== req.userId) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+
+  await post.deleteOne();
+  res.status(204).send();
+});
+
+module.exports = router;
+                  </textarea>
+                </div>
+
+                <div class="card">
+                  <h2 class="card-title">Express server &amp; API usage</h2>
+                  <p class="card-subtitle">Backend bootstrap and example Fetch calls from this SPA.</p>
+                  <textarea class="code-snippet" readonly>
+// src/server.js
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+const authRoutes = require('./routes/auth.routes');
+const postRoutes = require('./routes/post.routes');
+
+const app = express();
+
+app.use(cors({
+  origin: process.env.CLIENT_ORIGIN,
+  credentials: false
+}));
+app.use(express.json());
+
+app.use('/api/auth', authRoutes);
+app.use('/api/posts', postRoutes);
+
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    const port = process.env.PORT || 4000;
+    app.listen(port, () => {
+      console.log('API running on http://localhost:' + port);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to connect to MongoDB', err);
+    process.exit(1);
+  });
+
+
+// Example frontend usage from this SPA:
+//
+// const API_BASE = 'http://localhost:4000/api';
+//
+// async function login(email, password) {
+//   const res = await fetch(API_BASE + '/auth/login', {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify({ email, password })
+//   });
+//   if (!res.ok) throw new Error('Login failed');
+//   const data = await res.json();
+//   localStorage.setItem('token', data.token);
+//   return data.user;
+// }
+//
+// async function fetchMyPosts() {
+//   const token = localStorage.getItem('token');
+//   const res = await fetch(API_BASE + '/posts/me?search=&status=&visibility=', {
+//     headers: { Authorization: 'Bearer ' + token }
+//   });
+//   if (!res.ok) throw new Error('Failed to fetch posts');
+//   return res.json();
+// }
+                  </textarea>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'inkstack-demo-state-v1';
+      const THEME_KEY = 'inkstack-theme';
+      let state = {
+        users: [],
+        currentUserId: null,
+        posts: []
+      };
+      let editingPostId = null;
+      let currentTags = [];
+
+      const authView = document.getElementById('auth-view');
+      const appShell = document.getElementById('app-shell');
+      const userMeta = document.getElementById('user-meta');
+      const userEmailDisplay = document.getElementById('user-email-display');
+
+      const themeToggleBtn = document.getElementById('theme-toggle');
+      const themeToggleLabel = document.getElementById('theme-toggle-label');
+
+      const loginForm = document.getElementById('login-form');
+      const signupForm = document.getElementById('signup-form');
+      const loginEmailInput = document.getElementById('login-email');
+      const loginPasswordInput = document.getElementById('login-password');
+      const signupNameInput = document.getElementById('signup-name');
+      const signupEmailInput = document.getElementById('signup-email');
+      const signupPasswordInput = document.getElementById('signup-password');
+      const demoBtn = document.getElementById('btn-demo');
+
+      const sidebarToggleBtn = document.getElementById('btn-toggle-sidebar');
+      const sidebarCloseBtn = document.getElementById('btn-close-sidebar');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+      const navButtons = document.querySelectorAll('.nav-item');
+      const views = document.querySelectorAll('.view');
+
+      const statTotal = document.getElementById('stat-total-posts');
+      const statPublished = document.getElementById('stat-published-posts');
+      const statDrafts = document.getElementById('stat-draft-posts');
+      const statPublic = document.getElementById('stat-public-count');
+      const statPrivate = document.getElementById('stat-private-count');
+      const dashboardRecent = document.getElementById('dashboard-recent');
+
+      const editorHeading = document.getElementById('editor-heading');
+      const postTitleInput = document.getElementById('post-title');
+      const postVisibilityToggle = document.getElementById('post-visibility');
+      const postVisibilityLabel = document.getElementById('post-visibility-label');
+      const postCategoryInput = document.getElementById('post-category');
+      const tagsListEl = document.getElementById('tags-list');
+      const tagInput = document.getElementById('tag-input');
+      const editorSurface = document.getElementById('post-editor');
+      const editorStatus = document.getElementById('editor-status');
+      const btnSaveDraft = document.getElementById('btn-save-draft');
+      const btnPublish = document.getElementById('btn-publish');
+      const btnExportMd = document.getElementById('btn-export-md');
+      const btnClearFormat = document.getElementById('btn-clear-format');
+
+      const postsSearchInput = document.getElementById('posts-search');
+      const filterStatusSelect = document.getElementById('filter-status');
+      const filterVisibilitySelect = document.getElementById('filter-visibility');
+      const postsListEl = document.getElementById('posts-list');
+
+      const settingsEmail = document.getElementById('settings-email');
+      const settingsCreated = document.getElementById('settings-created');
+      const logoutTopBtn = document.getElementById('btn-logout');
+      const logoutSettingsBtn = document.getElementById('btn-logout-settings');
+      const themeRadioInputs = document.querySelectorAll('input[name="theme-choice"]');
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') {
+            state.users = parsed.users || [];
+            state.currentUserId = parsed.currentUserId || null;
+            state.posts = parsed.posts || [];
+          }
+        } catch (err) {
+          console.warn('Failed to load state', err);
+        }
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (err) {
+          console.warn('Failed to save state', err);
+        }
+      }
+
+      function uid() {
+        return 'p_' + Math.random().toString(36).slice(2, 8) + '_' + Date.now().toString(36);
+      }
+
+      function getCurrentUser() {
+        if (!state.currentUserId) return null;
+        return state.users.find(u => u.id === state.currentUserId) || null;
+      }
+
+      function getUserPosts() {
+        const user = getCurrentUser();
+        if (!user) return [];
+        return state.posts.filter(p => p.authorId === user.id);
+      }
+
+      function setTheme(theme) {
+        const root = document.documentElement;
+        const next = theme === 'light' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        themeToggleLabel.textContent = next === 'dark' ? 'Dark' : 'Light';
+        try {
+          localStorage.setItem(THEME_KEY, next);
+        } catch (err) {
+          console.warn('Failed to persist theme', err);
+        }
+        themeRadioInputs.forEach(input => {
+          input.checked = input.value === next;
+        });
+      }
+
+      function initTheme() {
+        let stored = null;
+        try {
+          stored = localStorage.getItem(THEME_KEY);
+        } catch (err) {
+          stored = null;
+        }
+        if (stored === 'light' || stored === 'dark') {
+          setTheme(stored);
+        } else {
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          setTheme(prefersDark ? 'dark' : 'light');
+        }
+      }
+
+      function setAuthMode(mode) {
+        const tabs = document.querySelectorAll('.auth-tab');
+        tabs.forEach(tab => {
+          tab.classList.toggle('is-active', tab.dataset.authMode === mode);
+        });
+        loginForm.classList.toggle('is-active', mode === 'login');
+        signupForm.classList.toggle('is-active', mode === 'signup');
+      }
+
+      function showApp() {
+        authView.classList.add('hidden');
+        appShell.classList.remove('hidden');
+        userMeta.classList.remove('hidden');
+        const user = getCurrentUser();
+        if (user) {
+          userEmailDisplay.textContent = user.email;
+        }
+        const posts = getUserPosts();
+        if (posts.length === 0) {
+          setActiveView('new-post');
+          startNewPost();
+        } else {
+          setActiveView('dashboard');
+        }
+        renderAll();
+      }
+
+      function showAuth() {
+        appShell.classList.add('hidden');
+        authView.classList.remove('hidden');
+        userMeta.classList.add('hidden');
+        editingPostId = null;
+        currentTags = [];
+        editorSurface.innerHTML = '';
+        postTitleInput.value = '';
+        postCategoryInput.value = '';
+      }
+
+      function handleSignup(event) {
+        event.preventDefault();
+        const email = signupEmailInput.value.trim().toLowerCase();
+        const password = signupPasswordInput.value;
+        const name = signupNameInput.value.trim() || undefined;
+        if (!email || !password) {
+          alert('Email and password are required.');
+          return;
+        }
+        if (password.length < 6) {
+          alert('Password must be at least 6 characters.');
+          return;
+        }
+        if (state.users.some(u => u.email === email)) {
+          alert('An account with that email already exists.');
+          return;
+        }
+        const id = uid();
+        const now = new Date().toISOString();
+        state.users.push({
+          id,
+          email,
+          name: name || null,
+          password, // For demo only; real backend uses hashing.
+          createdAt: now
+        });
+        state.currentUserId = id;
+        saveState();
+        showApp();
+      }
+
+      function handleLogin(event) {
+        event.preventDefault();
+        const email = loginEmailInput.value.trim().toLowerCase();
+        const password = loginPasswordInput.value;
+        const user = state.users.find(u => u.email === email && u.password === password);
+        if (!user) {
+          alert('Invalid email or password (demo auth is local to this browser).');
+          return;
+        }
+        state.currentUserId = user.id;
+        saveState();
+        showApp();
+      }
+
+      function handleDemoLogin() {
+        let user = state.users.find(u => u.email === 'demo@inkstack.local');
+        if (!user) {
+          const now = new Date().toISOString();
+          user = {
+            id: uid(),
+            email: 'demo@inkstack.local',
+            name: 'Demo Writer',
+            password: 'password',
+            createdAt: now
+          };
+          state.users.push(user);
+          state.posts.push(
+            {
+              id: uid(),
+              authorId: user.id,
+              title: 'Welcome to InkStack (Demo)',
+              content: '<h2>Private-first blogging</h2><p>This is a sample post illustrating how InkStack treats privacy. Posts are private to your account unless you mark them as public.</p><ul><li>Drafts stay here until you publish.</li><li>Search only scans your own posts.</li><li>Tags and categories help organize your work.</li></ul>',
+              status: 'published',
+              isPublic: false,
+              tags: ['welcome', 'demo'],
+              category: 'Guide',
+              createdAt: now,
+              updatedAt: now
+            },
+            {
+              id: uid(),
+              authorId: user.id,
+              title: 'Ideas for future essays',
+              content: '<p>Start capturing small notes as drafts. Turn them into polished, public posts only when you are ready.</p><ul><li>Writing as a daily practice.</li><li>On building private-first tools.</li><li>Notes on research and reading.</li></ul>',
+              status: 'draft',
+              isPublic: false,
+              tags: ['ideas'],
+              category: 'Notes',
+              createdAt: now,
+              updatedAt: now
+            }
+          );
+        }
+        state.currentUserId = user.id;
+        saveState();
+        showApp();
+      }
+
+      function logout() {
+        state.currentUserId = null;
+        saveState();
+        showAuth();
+      }
+
+      function setActiveView(viewName) {
+        views.forEach(view => {
+          view.classList.toggle('view-active', view.id === 'view-' + viewName);
+        });
+        navButtons.forEach(btn => {
+          btn.classList.toggle('is-active', btn.dataset.view === viewName);
+        });
+        if (viewName === 'new-post') {
+          if (!editingPostId) {
+            startNewPost();
+          }
+        }
+      }
+
+      function startNewPost() {
+        editingPostId = null;
+        currentTags = [];
+        editorHeading.textContent = 'New post';
+        postTitleInput.value = '';
+        postCategoryInput.value = '';
+        editorSurface.innerHTML = '';
+        postVisibilityToggle.checked = false;
+        postVisibilityLabel.textContent = 'Private';
+        editorStatus.textContent = 'Draft not saved yet.';
+        renderTags();
+      }
+
+      function startEditPost(id) {
+        const post = getUserPosts().find(p => p.id === id);
+        if (!post) return;
+        editingPostId = post.id;
+        editorHeading.textContent = 'Edit post';
+        postTitleInput.value = post.title || '';
+        postCategoryInput.value = post.category || '';
+        editorSurface.innerHTML = post.content || '';
+        postVisibilityToggle.checked = !!post.isPublic;
+        postVisibilityLabel.textContent = post.isPublic ? 'Public' : 'Private';
+        currentTags = Array.isArray(post.tags) ? [...post.tags] : [];
+        renderTags();
+        editorStatus.textContent = 'Editing existing post. Changes not saved yet.';
+        setActiveView('new-post');
+      }
+
+      function renderTags() {
+        tagsListEl.innerHTML = '';
+        currentTags.forEach((tag, index) => {
+          const span = document.createElement('span');
+          span.className = 'tag-pill';
+          span.dataset.index = String(index);
+          const label = document.createElement('span');
+          label.textContent = tag;
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'tag-remove';
+          remove.textContent = '×';
+          span.appendChild(label);
+          span.appendChild(remove);
+          tagsListEl.appendChild(span);
+        });
+      }
+
+      function savePost(status) {
+        const user = getCurrentUser();
+        if (!user) {
+          alert('You must be logged in.');
+          return;
+        }
+        const title = postTitleInput.value.trim() || 'Untitled';
+        const category = postCategoryInput.value.trim() || '';
+        const isPublic = !!postVisibilityToggle.checked;
+        const content = editorSurface.innerHTML.trim();
+        if (!content) {
+          if (!confirm('Content is empty. Save anyway?')) return;
+        }
+        const now = new Date().toISOString();
+        if (editingPostId) {
+          const post = state.posts.find(p => p.id === editingPostId && p.authorId === user.id);
+          if (!post) return;
+          post.title = title;
+          post.category = category;
+          post.isPublic = isPublic;
+          post.status = status;
+          post.content = content;
+          post.tags = [...currentTags];
+          post.updatedAt = now;
+        } else {
+          const id = uid();
+          state.posts.push({
+            id,
+            authorId: user.id,
+            title,
+            category,
+            isPublic,
+            status,
+            content,
+            tags: [...currentTags],
+            createdAt: now,
+            updatedAt: now
+          });
+          editingPostId = id;
+        }
+        saveState();
+        const label = status === 'published' ? 'Published' : 'Draft saved';
+        editorStatus.textContent = label + ' at ' + formatTime(now) + '.';
+        renderDashboard();
+        renderPostsList();
+      }
+
+      function deletePost(id) {
+        const user = getCurrentUser();
+        if (!user) return;
+        const post = state.posts.find(p => p.id === id && p.authorId === user.id);
+        if (!post) return;
+        const ok = confirm('Delete this post permanently?');
+        if (!ok) return;
+        state.posts = state.posts.filter(p => p.id !== id);
+        if (editingPostId === id) {
+          startNewPost();
+        }
+        saveState();
+        renderDashboard();
+        renderPostsList();
+      }
+
+      function stripHtml(html) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html || '';
+        return tmp.textContent || tmp.innerText || '';
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return '—';
+        const d = new Date(dateStr);
+        if (Number.isNaN(d.getTime())) return '—';
+        return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+      }
+
+      function formatTime(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        if (Number.isNaN(d.getTime())) return '';
+        return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+      }
+
+      function slugify(title) {
+        return (title || 'post')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .slice(0, 48) || 'post';
+      }
+
+      function renderDashboard() {
+        const posts = getUserPosts();
+        const total = posts.length;
+        const published = posts.filter(p => p.status === 'published').length;
+        const drafts = posts.filter(p => p.status === 'draft').length;
+        const publicCount = posts.filter(p => p.status === 'published' && p.isPublic).length;
+        const privateCount = published - publicCount;
+
+        statTotal.textContent = String(total);
+        statPublished.textContent = String(published);
+        statDrafts.textContent = String(drafts);
+        statPublic.textContent = String(publicCount);
+        statPrivate.textContent = String(privateCount < 0 ? 0 : privateCount);
+
+        dashboardRecent.innerHTML = '';
+        if (posts.length === 0) {
+          const div = document.createElement('div');
+          div.className = 'empty-state';
+          div.textContent = 'No posts yet. Use “New post” to start your first draft.';
+          dashboardRecent.appendChild(div);
+          return;
+        }
+        const recent = [...posts].sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || '')).slice(0, 3);
+        recent.forEach(post => {
+          const item = document.createElement('div');
+          item.className = 'post-card';
+          const snippet = stripHtml(post.content).slice(0, 120) + (stripHtml(post.content).length > 120 ? '…' : '');
+          item.innerHTML = `
+            <div class="post-card-main">
+              <div class="post-meta-row">
+                <span class="badge badge-small ${post.status === 'draft' ? 'badge-muted' : 'badge-success'}">${post.status}</span>
+                <span class="badge badge-small ${post.isPublic ? 'badge-outline' : 'badge-muted'}">${post.isPublic ? 'Public' : 'Private'}</span>
+                <span class="text-xs" style="color: var(--text-soft);">Updated ${formatDate(post.updatedAt)} · ${formatTime(post.updatedAt)}</span>
+              </div>
+              <h3 class="post-title">${post.title || 'Untitled'}</h3>
+              <p class="post-excerpt">${snippet}</p>
+            </div>
+          `;
+          dashboardRecent.appendChild(item);
+        });
+      }
+
+      function renderPostsList() {
+        const posts = getUserPosts();
+        postsListEl.innerHTML = '';
+        if (posts.length === 0) {
+          const div = document.createElement('div');
+          div.className = 'empty-state';
+          div.textContent = 'You have no posts yet. Create one from the “New post” view.';
+          postsListEl.appendChild(div);
+          return;
+        }
+        const query = (postsSearchInput.value || '').toLowerCase();
+        const statusFilter = filterStatusSelect.value;
+        const visFilter = filterVisibilitySelect.value;
+
+        let filtered = posts;
+
+        if (statusFilter) {
+          filtered = filtered.filter(p => p.status === statusFilter);
+        }
+        if (visFilter === 'public') {
+          filtered = filtered.filter(p => p.isPublic);
+        } else if (visFilter === 'private') {
+          filtered = filtered.filter(p => !p.isPublic);
+        }
+        if (query) {
+          filtered = filtered.filter(p => {
+            const text = (p.title || '') + ' ' + stripHtml(p.content) + ' ' + (Array.isArray(p.tags) ? p.tags.join(' ') : '');
+            return text.toLowerCase().includes(query);
+          });
+        }
+
+        if (filtered.length === 0) {
+          const div = document.createElement('div');
+          div.className = 'empty-state';
+          div.textContent = 'No posts match the current filters or search.';
+          postsListEl.appendChild(div);
+          return;
+        }
+
+        filtered.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+
+        filtered.forEach(post => {
+          const card = document.createElement('article');
+          card.className = 'post-card';
+          card.dataset.id = post.id;
+          const snippet = stripHtml(post.content).slice(0, 160) + (stripHtml(post.content).length > 160 ? '…' : '');
+          const tags = Array.isArray(post.tags) ? post.tags : [];
+          card.innerHTML = `
+            <div class="post-card-main">
+              <div class="post-meta-row">
+                <span class="badge badge-small ${post.status === 'draft' ? 'badge-muted' : 'badge-success'}">${post.status}</span>
+                <span class="badge badge-small ${post.isPublic ? 'badge-outline' : 'badge-muted'}">${post.isPublic ? 'Public' : 'Private'}</span>
+                ${post.category ? `<span class="badge badge-small badge-outline">${post.category}</span>` : ''}
+              </div>
+              <h3 class="post-title">${post.title || 'Untitled'}</h3>
+              <p class="post-excerpt">${snippet}</p>
+              ${tags.length ? `<div class="post-tags-inline">${tags.map(t => `<span class="post-tag-chip">${t}</span>`).join('')}</div>` : ''}
+            </div>
+            <div class="post-footer">
+              <span>Updated ${formatDate(post.updatedAt)} · ${formatTime(post.updatedAt)}</span>
+              <div class="post-actions">
+                <button type="button" class="btn btn-ghost btn-sm" data-action="edit">Edit</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-action="export-md">Export</button>
+                <button type="button" class="btn btn-ghost btn-sm btn-danger" data-action="delete">Delete</button>
+              </div>
+            </div>
+          `;
+          postsListEl.appendChild(card);
+        });
+      }
+
+      function renderSettings() {
+        const user = getCurrentUser();
+        if (!user) return;
+        settingsEmail.textContent = user.email;
+        settingsCreated.textContent = formatDate(user.createdAt);
+      }
+
+      function renderAll() {
+        renderDashboard();
+        renderPostsList();
+        renderSettings();
+      }
+
+      function toggleSidebar(open) {
+        if (open) {
+          document.body.classList.add('sidebar-open');
+        } else {
+          document.body.classList.remove('sidebar-open');
+        }
+      }
+
+      function execEditorCommand(command) {
+        editorSurface.focus();
+        if (command === 'bold') {
+          document.execCommand('bold');
+        } else if (command === 'italic') {
+          document.execCommand('italic');
+        } else if (command === 'h2') {
+          document.execCommand('formatBlock', false, 'h2');
+        } else if (command === 'ul') {
+          document.execCommand('insertUnorderedList');
+        } else if (command === 'link') {
+          const selection = window.getSelection();
+          const hasSelection = selection && !selection.isCollapsed;
+          const url = prompt('Enter URL to link to (include https://):');
+          if (!url) return;
+          if (hasSelection) {
+            document.execCommand('createLink', false, url);
+          } else {
+            const text = prompt('Text for the link:') || url;
+            const a = document.createElement('a');
+            a.href = url;
+            a.textContent = text;
+            editorSurface.appendChild(a);
+          }
+        }
+      }
+
+      function exportCurrentPostAsMarkdown() {
+        const user = getCurrentUser();
+        if (!user) return;
+        const title = postTitleInput.value.trim() || 'Untitled';
+        const contentText = stripHtml(editorSurface.innerHTML);
+        const md = '# ' + title + '\n\n' + contentText;
+        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = slugify(title) + '.md';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function exportPostAsMarkdown(post) {
+        const title = post.title || 'Untitled';
+        const contentText = stripHtml(post.content);
+        const md = '# ' + title + '\n\n' + contentText;
+        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = slugify(title) + '.md';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function initEvents() {
+        document.querySelectorAll('.auth-tab').forEach(btn => {
+          btn.addEventListener('click', () => {
+            setAuthMode(btn.dataset.authMode === 'signup' ? 'signup' : 'login');
+          });
+        });
+
+        signupForm.addEventListener('submit', handleSignup);
+        loginForm.addEventListener('submit', handleLogin);
+        demoBtn.addEventListener('click', handleDemoLogin);
+
+        themeToggleBtn.addEventListener('click', () => {
+          const root = document.documentElement;
+          const current = root.getAttribute('data-theme') || 'dark';
+          setTheme(current === 'dark' ? 'light' : 'dark');
+        });
+        themeRadioInputs.forEach(input => {
+          input.addEventListener('change', () => {
+            if (input.checked) {
+              setTheme(input.value);
+            }
+          });
+        });
+
+        sidebarToggleBtn.addEventListener('click', () => toggleSidebar(true));
+        sidebarCloseBtn.addEventListener('click', () => toggleSidebar(false));
+        sidebarOverlay.addEventListener('click', () => toggleSidebar(false));
+
+        navButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const view = btn.dataset.view;
+            setActiveView(view);
+            toggleSidebar(false);
+          });
+        });
+
+        logoutTopBtn.addEventListener('click', logout);
+        logoutSettingsBtn.addEventListener('click', logout);
+
+        postVisibilityToggle.addEventListener('change', () => {
+          postVisibilityLabel.textContent = postVisibilityToggle.checked ? 'Public' : 'Private';
+        });
+
+        tagInput.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            const value = tagInput.value.trim();
+            if (value && !currentTags.includes(value)) {
+              currentTags.push(value);
+              renderTags();
+            }
+            tagInput.value = '';
+          }
+        });
+        tagsListEl.addEventListener('click', e => {
+          const btn = e.target;
+          if (btn.classList.contains('tag-remove')) {
+            const parent = btn.parentElement;
+            const index = Number(parent.dataset.index);
+            if (!Number.isNaN(index)) {
+              currentTags.splice(index, 1);
+              renderTags();
+            }
+          }
+        });
+
+        document.querySelectorAll('.toolbar-button[data-command]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const command = btn.dataset.command;
+            execEditorCommand(command);
+          });
+        });
+        btnClearFormat.addEventListener('click', () => {
+          editorSurface.focus();
+          document.execCommand('removeFormat', false, null);
+        });
+
+        btnSaveDraft.addEventListener('click', () => savePost('draft'));
+        btnPublish.addEventListener('click', () => savePost('published'));
+        btnExportMd.addEventListener('click', exportCurrentPostAsMarkdown);
+
+        postsSearchInput.addEventListener('input', renderPostsList);
+        filterStatusSelect.addEventListener('change', renderPostsList);
+        filterVisibilitySelect.addEventListener('change', renderPostsList);
+
+        postsListEl.addEventListener('click', e => {
+          const btn = e.target.closest('button[data-action]');
+          if (!btn) return;
+          const card = btn.closest('.post-card');
+          if (!card) return;
+          const id = card.dataset.id;
+          const action = btn.dataset.action;
+          const posts = getUserPosts();
+          const post = posts.find(p => p.id === id);
+          if (!post) return;
+
+          if (action === 'edit') {
+            startEditPost(id);
+          } else if (action === 'delete') {
+            deletePost(id);
+          } else if (action === 'export-md') {
+            exportPostAsMarkdown(post);
+          }
+        });
+
+        window.addEventListener('beforeunload', saveState);
+      }
+
+      function init() {
+        loadState();
+        initTheme();
+        initEvents();
+        const user = getCurrentUser();
+        if (user) {
+          showApp();
+        } else {
+          showAuth();
+        }
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
